@@ -1,0 +1,162 @@
+#include "model.h"
+model::model(QString path) : path(path), datiTotali(new Container<deepPointer<nowqt>>()), modificato(false)
+{
+}
+
+model::~model()
+{
+    datiTotali->clear();
+    delete datiTotali;
+}
+
+/*
+
+QStringList model::getCampiCliente(const unsigned int indice) const
+{
+    QStringList temp;
+    deepPointer<nowqt> clienteTemp = datiTotali->prendiNodoIndice(indice);
+    temp.push_back(QString::fromStdString(clienteTemp->getNome()));
+    temp.push_back(QString::fromStdString(clienteTemp->getCognome()));
+    temp.push_back(QString::fromStdString(clienteTemp->getCodFisc()));
+    temp.push_back(clienteTemp->getDataN().toString());
+    temp.push_back(QString::fromStdString(clienteTemp->getEMail()));
+    tmp.push_back(QString::fromStdString(clienteTmp->getvia()));
+    tmp.push_back(QString::fromStdString(clienteTmp->getnum()));
+    tmp.push_back(QString::fromStdString(clienteTmp->getnumerotel()));
+    tmp.push_back(QString::fromStdString(clienteTmp->getmail()));
+    tmp.push_back(clienteTmp->getDataN().toString());
+    tmp.push_back(clienteTmp->getstudent()? "true":"false");
+
+    if(dynamic_cast<allinclusive*>(&(*(clienteTemp))) != nullptr){
+        auto clienteai = dynamic_cast<allinclusive*>(&(*(clienteTemp)));
+        temp.push_back(clienteai->getCostoAI().toString());
+        tmp.push_back(QString::fromStdString(clientevip->getnomeistruttorepiscina()));
+        tmp.push_back(clientevip->iscorsonuoto()? "true":"false");
+        tmp.push_back(clientevip->getDataPalestra().toString());
+        tmp.push_back(QString::fromStdString(clientevip->getnomeistruttorepalestra()));
+        tmp.push_back(clientevip->isscheda()? "true":"false");
+        tmp.push_back("true");
+        tmp.push_back("true");
+    }
+    else if(dynamic_cast<kids*>(&(*(clienteTemp))) != nullptr){
+        auto clientekids = dynamic_cast<kids*>(&(*(clienteTmp)));
+        temp.push_back(clientekids->getDataPiscina().toString());
+        tmp.push_back(QString::fromStdString(clientepis->getnomeistruttorepiscina()));
+        tmp.push_back(clientepis->iscorsonuoto()? "true":"false");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("true");
+        tmp.push_back("false");
+    }
+    else if(dynamic_cast<palestra*>(&(*(clienteTmp))) != nullptr){
+        auto clientepal = dynamic_cast<palestra*>(&(*(clienteTmp)));
+        tmp.push_back("Non abbonato");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("Non abbonato");
+        tmp.push_back(clientepal->getDataPalestra().toString());
+        tmp.push_back(QString::fromStdString(clientepal->getnomeistruttorepalestra()));
+        tmp.push_back(clientepal->isscheda()? "true":"false");
+        tmp.push_back("false");
+        tmp.push_back("true");
+    }
+    else if(dynamic_cast<piscina*>(&(*(clienteTmp))) != nullptr){
+        auto clientepis = dynamic_cast<piscina*>(&(*(clienteTmp)));
+        tmp.push_back(clientepis->getDataPiscina().toString());
+        tmp.push_back(QString::fromStdString(clientepis->getnomeistruttorepiscina()));
+        tmp.push_back(clientepis->iscorsonuoto()? "true":"false");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("Non abbonato");
+        tmp.push_back("true");
+        tmp.push_back("false");
+    }
+    return temp;
+}*/
+
+
+
+QStringList model::getListaClientiPDF() const
+{
+    QStringList ret;
+    QString datiCliente;
+    for(auto it=datiTotali->inizio();it!=datiTotali->fine() && !datiTotali->isEmpty();++it)
+    {
+        datiCliente =(QString::fromStdString(("N:" +(*(*it)).getNome() + " ,C: " + (*(*it)).getCognome()+ " ,CF: " + (*(*it)).getCodFisc())));
+        ret.push_back(datiCliente);
+
+    }
+
+    return ret;
+
+}
+
+deepPointer<nowqt> model::mostraCliente(const unsigned int i) const
+{
+    deepPointer<nowqt> clienteDaVisualizzare;
+    clienteDaVisualizzare = (datiTotali->prendiNodoIndice(i));
+    return clienteDaVisualizzare;
+}
+
+bool model::getModificato() const
+{
+    return modificato;
+}
+
+QStringList model::getListaClientiT(QMap<unsigned int, unsigned int>& indexMapper) const
+{
+    QStringList ret;
+    QString cliente;
+    auto it=datiTotali->inizio();
+    unsigned int count=0;
+    if(!datiTotali->isEmpty()){
+        while(it!=datiTotali->fine()){
+            cliente = (QString::fromStdString((*(*it)).getNome() + " " + (*(*it)).getCognome()));
+                indexMapper.insert((uint)ret.count(),count);
+
+                ret.push_back(cliente);
+            count++;
+            ++it;
+        }
+    }
+
+    return ret;
+}
+
+void model::aggNelContainer(const QStringList c)
+{
+    modificato=true;
+    deepPointer<nowqt> cliente;
+    QDate dataNascitaTemp = QDate::fromString(c.at(3));
+    QDate dataInizioAbbTemp = QDate::fromString(c.at(25));
+    if ((c.at(5) == "true" && c.at(11) == "true") && (c.at(17) == "true")) {
+        cliente = new allinclusive(c.at(0).toStdString(),c.at(1).toStdString(), dataNascitaTemp.year(),dataNascitaTemp.month(),dataNascitaTemp.day(),c.at(2).toStdString(),
+                                   c.at(4).toStdString(), dataInizioAbbTemp.year(), dataInizioAbbTemp.month(),dataInizioAbbTemp.day(), c.at(26).toUInt(),
+                                   c.at(23)=="true" ? true:false, c.at(24).toStdString(),c.at(27).toDouble(), c.at(6).toStdString(), c.at(7).toStdString(), c.at(8).toDouble(),
+                                   c.at(9).toUInt(), c.at(9).toUInt(), c.at(10)=="true" ? true:false, c.at(12).toStdString(), c.at(13).toStdString(), c.at(14).toDouble(),
+                                   c.at(15).toUInt(), c.at(15).toUInt(), c.at(16)=="true" ? true:false, c.at(18).toStdString(), c.at(19).toStdString(), c.at(20).toDouble(),
+                                    c.at(21).toUInt(), c.at(21).toUInt(), c.at(22)=="true" ? true:false, c.at(27).toDouble());
+    } // solo kids
+
+    else if((c.at(5) == "true") && (c.at(11) == "false" && c.at(17) == "false")){
+        cliente = new kids(c.at(0).toStdString(), c.at(1).toStdString(), dataNascitaTemp.year(), dataNascitaTemp.month(), dataNascitaTemp.day(),
+                           c.at(2).toStdString(),c.at(4).toStdString(),dataInizioAbbTemp.year(), dataInizioAbbTemp.month(),
+                           dataInizioAbbTemp.day(), c.at(26).toUInt(), c.at(23)=="true" ? true:false, c.at(24).toStdString(), c.at(27).toDouble(),
+                           c.at(6).toStdString(), c.at(7).toStdString(), c.at(8).toDouble(), c.at(9).toUInt(), c.at(9).toUInt(), c.at(10)=="true" ? true:false);
+    } // solo cinema
+    else if((c.at(11) == "true") && (c.at(5) == "false" && c.at(17) == "false")){
+        cliente = new cinema(c.at(0).toStdString(),c.at(1).toStdString(), dataNascitaTemp.year(),dataNascitaTemp.month(),dataNascitaTemp.day(),c.at(2).toStdString(),
+                             c.at(4).toStdString(),dataInizioAbbTemp.year(), dataInizioAbbTemp.month(),dataInizioAbbTemp.day(), c.at(26).toUInt(),
+                             c.at(23)=="true" ? true:false, c.at(24).toStdString(),c.at(27).toDouble(), c.at(12).toStdString(), c.at(13).toStdString(), c.at(14).toDouble(),
+                             c.at(15).toUInt(), c.at(15).toUInt(), c.at(16)=="true" ? true:false);
+    } // solo sport
+    else if((c.at(17) == "true") && (c.at(5) == "false" && c.at(11) == "false")){
+    cliente= new sport(c.at(0).toStdString(),c.at(1).toStdString(), dataNascitaTemp.year(),dataNascitaTemp.month(),dataNascitaTemp.day(),c.at(2).toStdString(),
+            c.at(4).toStdString(), dataInizioAbbTemp.year(), dataInizioAbbTemp.month(), dataInizioAbbTemp.day(), c.at(26).toUInt(),
+            c.at(23)=="true" ? true:false, c.at(24).toStdString(),c.at(27).toDouble(), c.at(18).toStdString(), c.at(19).toStdString(), c.at(20).toDouble(),
+                      c.at(21).toUInt(), c.at(21).toUInt(), c.at(22)=="true" ? true:false);
+    }
+
+    datiTotali->aggInOrdine(cliente);
+    emit clienteAggiunto();
+}
