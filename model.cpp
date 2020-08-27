@@ -74,23 +74,6 @@ QStringList model::getCampiCliente(const unsigned int indice) const
     return temp;
 }*/
 
-
-
-QStringList model::getListaClientiPDF() const
-{
-    QStringList ret;
-    QString datiCliente;
-    for(auto it=datiTotali->inizio();it!=datiTotali->fine() && !datiTotali->isEmpty();++it)
-    {
-        datiCliente =(QString::fromStdString(("N:" +(*(*it)).getNome() + " ,C: " + (*(*it)).getCognome()+ " ,CF: " + (*(*it)).getCodFisc())));
-        ret.push_back(datiCliente);
-
-    }
-
-    return ret;
-
-}
-
 deepPointer<nowqt> model::mostraCliente(const unsigned int i) const
 {
     deepPointer<nowqt> clienteDaVisualizzare;

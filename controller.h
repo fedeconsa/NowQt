@@ -32,7 +32,6 @@ public slots:
     void errData(string);
     void esitoCoup(string);
     void aggClienteContainer(const QStringList);
-    void esportaPDFClienti() const;
     void openDettView(const unsigned int)const;
     void resetListaClienti();
 

@@ -2,7 +2,7 @@
 controller::controller(QObject *parent) : QObject(parent),view(new mainwindow()), addClientW(new addClientWindow()), dettClientW(new dettClientWindow()), m(new model("data.xml"))
 {
     connect(view,SIGNAL(signOpenAddWindow()),this,SLOT(openAddView()));
-    connect(view, SIGNAL(signEsportaPDFClienti()), this, SLOT(esportaPDFClienti()));
+    //connect(view, SIGNAL(signEsportaPDFClienti()), this, SLOT(esportaPDFClienti())); SLOT editclient
     connect(view,SIGNAL(signOpenDettWindow(const unsigned int)),this,SLOT(openDettView(const unsigned int)));
     //connect(view,SIGNAL(richiestaShowCliente(const unsigned int)),this,SLOT(mostraCliente(const unsigned int)));
     connect(m, SIGNAL(clienteAggiunto()), this, SLOT(resetListaClienti()));
@@ -62,22 +62,6 @@ void controller::esitoCoup(string e)
     addClientW->mostraEsitoC(e);
 }
 
-void controller::esportaPDFClienti() const
-{
-    QString nomeFile = QFileDialog::getSaveFileName(view,"Stampa Cliente","../easybook/ClientiTotaliPDF","ListaClientiTOTALE_pdf(*.pdf)");
-    QPdfWriter writer(nomeFile);
-    QPainter painter(&writer);
-    painter.setPen(Qt::black);
-
-    int l=900, a1=1000;
-    QStringList clienti = m->getListaClientiPDF();
-    for(auto it = clienti.begin();it!=clienti.end();++it)
-    {
-        painter.drawText(l,a1,*it);
-        a1+=400;
-    }
-    painter.end();
-}
 
 void controller::aggClienteContainer(const QStringList dettagli)
 {

@@ -62,7 +62,6 @@ private:
 
 signals:
     void signOpenAddWindow();
-    void signEsportaPDFClienti();
     void signOpenDettWindow(const unsigned int);
     /*void infoWindow();
     void signOpenModWindow();
