@@ -7,11 +7,9 @@ mainwindow::mainwindow(QWidget *parent) : QWidget(parent), listaClienti(new view
 
   QMenuBar* menubar = new QMenuBar(this);
   QMenu* menu= new QMenu("File",menubar);
-  QAction* salva = new QAction("Salva",menu);
   QAction* exit = new QAction("Esci",menu);
 
   menu->addAction(exit);
-  menu->addAction(salva);
   menubar->addMenu(menu);
   mainLayout->addWidget(menubar);
 
