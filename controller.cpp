@@ -4,6 +4,7 @@ controller::controller(QObject *parent) : QObject(parent),view(new mainwindow())
     connect(view,SIGNAL(signOpenAddWindow()),this,SLOT(openAddView()));
     //connect(view, SIGNAL(signEsportaPDFClienti()), this, SLOT(esportaPDFClienti())); SLOT editclient
     connect(view,SIGNAL(signOpenDettWindow(const int)),this,SLOT(openDettView(const int)));
+    
     //connect(view,SIGNAL(richiestaShowCliente(const unsigned int)),this,SLOT(mostraCliente(const unsigned int)));
     connect(m, SIGNAL(clienteAggiunto()), this, SLOT(resetListaClienti()));
     connect(m, SIGNAL(clienteRimosso()), this, SLOT(resetListaClienti()));
@@ -34,16 +35,9 @@ void controller::openAddView() const
 
 void controller::openDettView(const unsigned int c) const {
             dettClientW->visualizzaDettagliCliente(m->mostraCliente(indexTranslate[c])); // è giusta
-            //dettClientW->caricaDati(m->getCampiCliente(view->getIndexSelected()), view->getIndexSelected());
             dettClientW->setModal(true);
             dettClientW->show();
 }
-
-/*
-void controller::mostraCliente(const unsigned int cliente){
-    dettClientW->visualizzaDettagliCliente(m->mostraCliente(indexTranslate[cliente]));
-}
-*/
 
 void controller::resetListaClienti()
 {
@@ -65,10 +59,15 @@ void controller::esitoCoup(string e)
     addClientW->mostraEsitoC(e);
 }
 
-
 void controller::aggClienteContainer(const QStringList dettagli)
 {
+    try{
     m->aggNelContainer(dettagli);
+    addClientW->close();
+    addClientW->successoCliente();
+    }catch(std::exception *exc){
+        addClientW->showErrorMessage(exc->what());
+    }
 }
 
 void controller::removeC(const int indice){
