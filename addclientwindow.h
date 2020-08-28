@@ -34,6 +34,7 @@ public:
     void mostraErroreData(string);
     void mostraEsitoC(string);
     bool codiceSconto;
+    void showErrorMessage(const QString& message);
 
 public slots:
     virtual void conferma();
@@ -53,7 +54,6 @@ public slots:
     void aggiornaCostoCHD();
     void aggiornaCostoSHD();
 
-    //void aggiornaCostoP(string, string, double);
 signals:
     void esitoCoupon(string);
     void erroreData(string);
