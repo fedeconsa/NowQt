@@ -245,6 +245,7 @@ void container<T>::erase_pos(int i)//non uso unsigned int perché non credo che 
     {
         delete first;
         first=nullptr;
+        size-=1;
         //return;
     }
 
