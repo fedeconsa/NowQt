@@ -432,9 +432,6 @@ void addClientWindow::aggiornaCostoSHD() {
 
                 temp->push_back(totaleAbbLabel->text()); //totale , costo aggiornato dei pacchetti
                 emit inviaStringaCliente(*temp);
-                this->close();
-
-                successoCliente();
             }
     }
 
@@ -516,6 +513,15 @@ void addClientWindow::aggiornaCostoSHD() {
        }
    }
 
+   void addClientWindow::showErrorMessage(const QString &message)
+   {
+       QDialog* errdialog= new QDialog(this);
+       QVBoxLayout* errlayout= new QVBoxLayout(errdialog);
+       errlayout->addWidget(new QLabel(message, errdialog));
+
+       errdialog->show();
+   }
+
 
    void addClientWindow::mostraEsitoC(string e)
    {
@@ -552,7 +558,6 @@ void addClientWindow::aggiornaCostoSHD() {
            emit esitoCoupon("carrellovuoto");
        }
    }
-
 
    void addClientWindow::resettaInput()
    {
