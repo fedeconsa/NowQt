@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QPdfWriter>
 #include <QFileDialog>
+#include <stdexcept>
 #include "mainwindow.h"
 #include "addclientwindow.h"
 #include "dettclientwindow.h"
@@ -42,7 +43,7 @@ private:
     addClientWindow *addClientW;
     dettClientWindow *dettClientW;
     model* m;
-    QMap< int,  int> indexTranslate;
+    QMap<int, aint> indexTranslate;
 };
 
 #endif // CONTROLLER_H
