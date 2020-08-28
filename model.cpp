@@ -86,7 +86,7 @@ bool model::getModificato() const
     return modificato;
 }
 
-QStringList model::getListaClientiT(QMap<unsigned int, unsigned int>& indexMapper) const
+QStringList model::getListaClientiT(QMap< int,  int>& indexMapper) const
 {
     QStringList ret;
     QString cliente;
@@ -142,4 +142,11 @@ void model::aggNelContainer(const QStringList c)
 
     datiTotali->push_back(cliente);
     emit clienteAggiunto();
+}
+
+void model::removeC(const int i)
+{
+    modificato=true;
+        datiTotali->erase_pos(i);
+        emit clienteRimosso();
 }

@@ -44,6 +44,7 @@ public:
 public slots:
    // void richiesta(string);
     void showInfoCliente();
+    void richRimuoviC();
 private:
 
     QComboBox * tipoP;
@@ -62,6 +63,7 @@ private:
 signals:
     void signOpenAddWindow();
     void signOpenDettWindow(const unsigned int);
+    void rimuoviCliente(const int);
     /*void infoWindow();
     void signOpenModWindow();
     void cercaRuntime();

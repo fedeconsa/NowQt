@@ -78,7 +78,7 @@ mainwindow::mainwindow(QWidget *parent) : QWidget(parent), listaClienti(new view
     connect(exit, SIGNAL(triggered()), this, SLOT(close()));
     //connect(modButton, SIGNAL(clicked()), this, SIGNAL(signEsportaPDFClienti())); SIGNAL editClient
     connect(dettButton, SIGNAL(clicked()), this, SLOT(showInfoCliente()));
-   // connect(removeButton, SIGNAL(clicked()),this, SLOT(richiestaRimoz()));
+    connect(removeButton, SIGNAL(clicked()),this, SLOT(richRimuoviC()));
    // connect(modButton, SIGNAL(clicked()), this, SIGNAL(signOpenModWindow()));
 //    connect(listaClienti, SIGNAL(itemSelectionChanged()), this, SLOT(showInfoCliente()));
 
@@ -118,3 +118,13 @@ unsigned int mainwindow::getIndexSelected() const
 {
     return listaClienti->getIndex();
 }
+
+void mainwindow::richRimuoviC()
+{
+    if(listaClienti->isSomeoneSelected())
+        emit rimuoviCliente(listaClienti->getIndex());
+    else{
+        nessunSelezionato();
+    }
+
+   }

@@ -21,15 +21,17 @@ public:
     ~model();
     QStringList getCampiCliente(const unsigned int) const;
     deepPointer<nowqt> mostraCliente(const unsigned int) const;
-    QStringList getListaClientiT(QMap<unsigned int,unsigned int> &) const;
+    QStringList getListaClientiT(QMap< int, int> &) const;
 
     bool getModificato() const;
     QStringList getListaClientiPDF() const;
 
 public slots:
     void aggNelContainer(const QStringList);
+    void removeC(const int);
 signals:
     void clienteAggiunto();
+    void clienteRimosso();
 private:
     QString path;
     container<deepPointer<nowqt>> *datiTotali;

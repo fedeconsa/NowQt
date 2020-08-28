@@ -3,9 +3,12 @@ controller::controller(QObject *parent) : QObject(parent),view(new mainwindow())
 {
     connect(view,SIGNAL(signOpenAddWindow()),this,SLOT(openAddView()));
     //connect(view, SIGNAL(signEsportaPDFClienti()), this, SLOT(esportaPDFClienti())); SLOT editclient
-    connect(view,SIGNAL(signOpenDettWindow(const unsigned int)),this,SLOT(openDettView(const unsigned int)));
+    connect(view,SIGNAL(signOpenDettWindow(const int)),this,SLOT(openDettView(const int)));
     //connect(view,SIGNAL(richiestaShowCliente(const unsigned int)),this,SLOT(mostraCliente(const unsigned int)));
     connect(m, SIGNAL(clienteAggiunto()), this, SLOT(resetListaClienti()));
+    connect(m, SIGNAL(clienteRimosso()), this, SLOT(resetListaClienti()));
+    connect(view,SIGNAL(rimuoviCliente(const int)),this,SLOT(removeC(const int)));
+    connect(m, SIGNAL(clienteRimosso()), this, SLOT(clienteRimShowBox()));
 
     connect(addClientW, SIGNAL(erroreInput(string)), this, SLOT(errInput(string)));
     connect(addClientW, SIGNAL(erroreData(string)),this , SLOT(errData(string)));
@@ -68,3 +71,11 @@ void controller::aggClienteContainer(const QStringList dettagli)
     m->aggNelContainer(dettagli);
 }
 
+void controller::removeC(const int indice){
+    m->removeC(indexTranslate[indice]);
+}
+
+void controller::clienteRimShowBox(){
+    QMessageBox clienteRimBox;
+    clienteRimBox.information(view,"Cliente rimosso","Il cliente selezionato è stato rimosso con successo!");
+}

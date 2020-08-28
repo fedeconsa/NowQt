@@ -2,9 +2,9 @@
 
 viewListaC::viewListaC(QWidget *parent):QListWidget (parent){}
 
-unsigned int viewListaC::getIndex() const
+int viewListaC::getIndex() const
 {
-    return (unsigned int)this->selectedIndexes()[0].row();
+    return (int)this->selectedIndexes()[0].row();
 }
 
 bool viewListaC::isSomeoneSelected() const

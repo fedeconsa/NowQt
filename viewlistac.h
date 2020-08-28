@@ -8,7 +8,7 @@ class viewListaC : public QListWidget
 public:
     viewListaC(QWidget * =nullptr);
 
-    unsigned int getIndex() const;
+    int getIndex() const;
 
     bool isSomeoneSelected() const;
 

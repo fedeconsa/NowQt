@@ -34,13 +34,15 @@ public slots:
     void aggClienteContainer(const QStringList);
     void openDettView(const unsigned int)const;
     void resetListaClienti();
+    void removeC(const int);
+    void clienteRimShowBox();
 
 private:
     mainwindow* view;
     addClientWindow *addClientW;
     dettClientWindow *dettClientW;
     model* m;
-    QMap<unsigned int,unsigned int> indexTranslate;
+    QMap< int,  int> indexTranslate;
 };
 
 #endif // CONTROLLER_H
