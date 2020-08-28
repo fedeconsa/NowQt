@@ -44,7 +44,6 @@ public:
 public slots:
    // void richiesta(string);
     void showInfoCliente();
-
 private:
 
     QComboBox * tipoP;

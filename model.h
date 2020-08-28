@@ -32,7 +32,7 @@ signals:
     void clienteAggiunto();
 private:
     QString path;
-    Container<deepPointer<nowqt>> *datiTotali;
+    container<deepPointer<nowqt>> *datiTotali;
 
 bool modificato;
 

@@ -5,380 +5,390 @@
 #include<deeppointer.h>
 using std::string;
 
-template <class T>
-class Container {
+template <typename T>
+class container{
 private:
-    class nodo {
-        friend class Container<T>;
-    private:
+    class nodo{
+    public:
         T info;
         nodo* next;
-        nodo(const T&, nodo* = nullptr);
-        nodo(const nodo&);
+        nodo(const T&, nodo* =nullptr);
         void distruggi();
     };
-    nodo* primo, *ultimo;
-    static nodo* clone(nodo*, nodo*&);
-
+    nodo* first;
+    nodo* last;
+        int size;
 public:
-    Container();
-    Container(const T&);
-    Container(const Container&);
-    ~Container();
-    Container& operator=(const Container&);
-
-
-    void aggInOrdine(const T&);
-    void rimpiazzaFinale(unsigned int, const T&);
-    void rimuoviIndice(const unsigned int);
-    T prendiNodoIndice(const unsigned int) const;
-    unsigned int trovaIndiceNodo(const T&);
-    void clear();
-    bool isEmpty() const;
-
-
-    class constIteratore
-    {
-        friend class Container<T>;
+    //costruttori e distruttore
+        container(nodo* =nullptr, nodo* =nullptr, unsigned int =0);
+        container(container*);
+    ~container();
+    //metodi della lista, push_back, remove, ...
+        void erase_pos (int); //cancello valore in posizione i
+        unsigned int get_pos(const T&); //*
+        //const T& element_at_pos(unsigned int);
+        bool empty() const; //*controllo se il container è vuoto
+        void push_front(const T&); //*aggiunge un elemento all'inizio
+        void push_back(const T&); //aggiunge un elemento alla fine
+        void pop_back(); //*fa una erase_pos(size-1) rimuove l'ultimo elemento DA VERIFICARE
+        void replace_last(int, const T&); //elimina elementi in una certa posizione e ne aggiunge un altro alla fine
+        T get_T_at_pos(int) const;
+        void erase();
+        int get_size()const; //ritorno IL NUMERO di elementi
+    //classe iteratore
+    class iterator{
+    friend class container<T>;
     private:
-        const nodo* puntatore;
-        constIteratore(nodo*);
+        nodo* pointer;
     public:
-        constIteratore();
-        constIteratore& operator=(const constIteratore&);
-        constIteratore& operator++();
-        constIteratore& operator++(int);
+        iterator(nodo* p=nullptr);
+
+        iterator& operator=(const iterator&);
+
+        iterator& operator++();		//prefisso
+        iterator operator++(int);	//postfisso
+
+        bool operator==(const iterator& );
+        bool operator!=(const iterator& );
+
+        T& operator*() const;
+                nodo* operator->() const;
+    };
+
+    class const_iterator{ //aggiungere i const dove servono!!
+        friend class container<T>;
+    private:
+        const nodo* pointer;
+    public:
+        const_iterator(nodo* p=nullptr);
+
+                const_iterator& operator=(const const_iterator&);
+
+        const_iterator& operator++();
+        const_iterator operator++(int);
+
+        bool operator==(const const_iterator& );
+        bool operator!=(const const_iterator& );
+
         const T& operator*() const;
-        const T* operator->() const;
-        bool operator==(const constIteratore&);
-        bool operator!=(const constIteratore&);
+                const nodo* operator->() const;
     };
 
-
-    class Iteratore{
-        friend class Container<T>;
-    private:
-        nodo * puntatore;
-        Iteratore(nodo *);
-    public:
-        Iteratore();
-        Iteratore& operator=(const Iteratore&);
-        Iteratore &operator++();
-        Iteratore &operator++(int);
-        T &operator*() const;
-        T *operator->() const;
-        bool operator==(const Iteratore &);
-        bool operator!=(const Iteratore &);
-
-    };
-    constIteratore inizio() const;
-    constIteratore fine() const;
-    Iteratore inizio();
-    Iteratore fine();
+        iterator begin();
+        iterator end();
+        const_iterator begin() const;
+        const_iterator end() const;
 };
 
-template <class T>
-Container<T>::nodo::nodo(const T& obj, nodo* n) : info(obj), next(n) {}
 
-template <class T>
-Container<T>::nodo::nodo(const nodo& n):info(n.info), next(n.next){}
+//NODO
+template<typename T>
+container<T>::nodo::nodo(const T& i, container::nodo * n): info(i), next(n){}
 
-template<class T>
-void Container<T>::nodo::distruggi()
+
+template<typename T>
+void container<T>::nodo::distruggi()
 {
-    if (next) next->distruggi();
+    if(next) next->distruggi();
     delete this;
 }
 
-template<class T>
-typename Container<T>::nodo* Container<T>::clone(nodo * pri, nodo *& ult)
+
+//ITERATOR
+template<typename T>
+container<T>::iterator::iterator(container::nodo *p): pointer(p){}
+
+template<typename T>
+typename container<T>::iterator & container<T>::iterator::operator=(const container::iterator & i)
 {
-    if (pri == nullptr)
-    {
-        ult = nullptr;
-        return nullptr;
-    }
-    nodo* p = new nodo(pri->info, clone(pri->next, ult));
-    if(pri->next == nullptr) ult = p;
-    return p;
-}
-
-template<class T>
-Container<T>::Container() : primo(nullptr), ultimo(nullptr) {}
-
-template <class T>
-Container<T>::Container(const T& obj): primo(new nodo(obj)){ ultimo=primo;}
-
-template<class T>
-Container<T>::Container(const Container & q) : primo(clone(q.primo, ultimo)) {}
-
-template<class T>
-Container<T>::~Container()
-{
-    if (primo) primo->distruggi();
-}
-
-template<class T>
-Container<T>& Container<T>::operator=(const Container & q)
-{
-    if (this != &q)
-    {
-        if(primo) delete primo;
-        primo = clone(q.primo, ultimo);
-    }
+    pointer=i.pointer;
     return *this;
 }
 
-template<class T>
-void Container<T>::aggInOrdine(const T & obj){
-    nodo* cliente = new nodo(obj);
-    if (primo == nullptr) primo = ultimo = cliente;
-    else if (primo->info > cliente->info) {
-        cliente->next = primo;
-        primo = cliente;
-    }
-    else {
-        nodo* tmp = primo;
-        while (tmp->next && tmp->next->info < cliente->info) tmp = tmp->next;
-        cliente->next = tmp->next;
-        tmp->next = cliente;
-        if (cliente->next == nullptr) ultimo = cliente;
-    }
-}
-
-template<class T>
-bool Container<T>::isEmpty() const
+template<typename T>
+typename container<T>::iterator &container<T>::iterator::operator++()
 {
-    return (primo==nullptr);
+    if(pointer)
+        pointer=pointer->next;
+    return *this;
 }
 
-
-template<class T>
-void Container<T>::rimpiazzaFinale(unsigned int indice, const T& clienteModificato){
-    rimuoviIndice(indice);
-    aggInOrdine(clienteModificato);
+template<typename T>
+typename container<T>::iterator container<T>::iterator::operator++(int)
+{
+    iterator copy(*this);
+    ++(*this);
+    return copy;
 }
 
-template <class T>
-void Container<T>::rimuoviIndice(const unsigned int i){
-    if(isEmpty())
+template<typename T>
+bool container<T>::iterator::operator==(const container::iterator & i)
+{
+    return i.pointer==pointer;
+}
+
+template<typename T>
+bool container<T>::iterator::operator!=(const container::iterator & i)
+{
+    return i.pointer!=pointer;//oppure return !(i.pointer==pointer), ma forse è meglio utilizare !=
+}
+
+template<typename T>
+T &container<T>::iterator::operator*() const
+{
+    return pointer->info;
+}
+
+template<typename T>
+typename container<T>::nodo *container<T>::iterator::operator->() const
+{
+    return pointer;
+}
+
+//CONST ITERATOR
+template<typename T>
+container<T>::const_iterator::const_iterator(container::nodo *p): pointer(p){}
+
+template<typename T>
+typename container<T>::const_iterator & container<T>::const_iterator::operator=(const container::const_iterator & i)
+{
+    pointer=i.pointer;
+    return *this;
+}
+
+template<typename T>
+typename container<T>::const_iterator &container<T>::const_iterator::operator++()
+{
+    if(pointer)
+        pointer=pointer->next;
+    return *this;
+}
+
+template<typename T>
+typename container<T>::const_iterator container<T>::const_iterator::operator++(int)
+{
+    iterator copy(*this);
+    ++(*this);
+    return copy;
+}
+
+template<typename T>
+bool container<T>::const_iterator::operator==(const container::const_iterator & i)
+{
+    return i.pointer==pointer;
+}
+
+template<typename T>
+bool container<T>::const_iterator::operator!=(const container::const_iterator & i)
+{
+    return i.pointer!=pointer;//oppure return !(i.pointer==pointer), ma forse è meglio utilizare !=
+}
+
+template<typename T>
+const T &container<T>::const_iterator::operator*() const
+{
+    return pointer->info;
+}
+
+template<typename T>
+const typename container<T>::nodo *container<T>::const_iterator::operator->() const
+{
+    return pointer;
+}
+//CONTAINER
+template<typename T>
+typename container<T>::iterator container<T>::begin()
+{
+    return iterator(first);
+    /*
+    iterator aux(first);
+    return aux;
+    */
+}
+
+template<typename T>
+typename container<T>::iterator container<T>::end()
+{
+    return iterator(nullptr);
+}
+
+template<typename T>
+container<T>::container(container::nodo *f, container::nodo *l, unsigned int s): first(f), last(l), size(s){}
+
+template<typename T>
+container<T>::container(container *c)
+{
+    auto temp=c->begin();
+    while(temp!=c->end())
+    {
+        this->insert(*c);
+    }
+
+}
+
+template<typename T>
+container<T>::~container()
+{
+    if(first) first->distruggi();
+    size=0;
+}
+
+template<typename T>
+void container<T>::erase_pos(int i)//non uso unsigned int perché non credo che un u.int possa essere 0
+{
+    if(empty() || i>=size)//this->empty il controllo sull'empty-ness è ridondante, da togliere
         return;
 
-    if(!primo->next){
-        if(i==0){
-            delete primo;
-            primo=nullptr;
-            return;
-        }
-    }
-    else{
-        nodo* prec=primo;
-        nodo* corr=primo->next;
+    nodo* tmp=first;
 
-        if(i==0){
-            primo=primo->next;
-            prec->next=nullptr;
-            delete prec;
-            return;
-        }
-
-        for(unsigned int x=1; corr->next && x<i; x++){
-            prec=prec->next;
-            corr=corr->next;
-        }
-
-        if(corr){
-            prec->next=corr->next;
-            corr->next=nullptr;
-            delete corr;
-            return;
-        }
+    if(!last)
+    {
+        delete first;
+        first=nullptr;
+        //return;
     }
 
-    return;
+    nodo* prev;
+    for (int x=i;x>0;x-=1)
+    {
+        prev=tmp;
+        tmp=tmp->next;
+    }
+    //forse va, da vedere
+    prev->next=tmp->next;
+    delete tmp;
+    size-=1;
 }
 
-template <class T>
-T Container<T>::prendiNodoIndice(const unsigned int i) const{
-    if(!primo->next){
-        if(i==0){
-            return primo->info;
-        }
-    }
-    else{
-        nodo* corr=primo->next;
-
-        if(i==0){
-            return primo->info;
-        }
-
-        for(unsigned int x=1; corr->next && x<i; x++){
-            corr=corr->next;
-        }
-
-        if(corr){
-            return corr->info;
-        }
-    }
-    T temp;
-    return temp;
-}
-
-template<class T>
-unsigned int Container<T>::trovaIndiceNodo(const T& nodoDaTrovare) {
+template<typename T>
+unsigned int container<T>::get_pos(const T & n)//PRE: nella lista esiste un nodo con valore n
+{
     unsigned int i=0;
-    nodo* corr = primo;
-    bool trovato = false;
-    while (trovato == false && corr->next){
-        if (corr->info == nodoDaTrovare) trovato = true;
-        else {
-            corr = corr->next;
-            i=i+1;
+    nodo*tmp=first;
+
+    bool found=false;
+    while(!found && tmp)
+    {
+        if(tmp->info==n)
+            found=true;
+        else
+        {
+            tmp=tmp->next;
+            i+=1;
         }
     }
     return i;
 }
 
-template<class T>
-void Container<T>::clear()
+template<typename T>
+bool container<T>::empty() const
 {
-    if (primo){
-        primo->distruggi();
-        primo = nullptr;
+    return size==0;
+}
+
+template<typename T>
+void container<T>::push_front(const T & n)
+{
+   if(!first)
+   {
+       first=last=new nodo(n, nullptr);
+       size=1;
+   }
+   else
+   {
+       first=new nodo(n, first);
+       size+=1;
+   }
+
+
+}
+
+template<typename T>
+void container<T>::push_back(const T & n)
+{
+    if(!first)
+   {
+       first=last=new nodo(n, nullptr);
+       size=1;
+   }
+   else
+   {
+        nodo*new_last=new nodo(n,nullptr);
+        last->next=new_last;
+        last=new_last;
+        size+=1;
+   }
+}
+template<typename T>
+void container<T>::pop_back() // per fare questa uso la erase, che elimina un elemento in una posizione nota
+{
+    if(this==last)//caso base: ho un solo elemento nella lista
+    {
+        delete last;
+        first=last=nullptr;
+        size=0;
+        return;
+    }
+    nodo* prec=first, *curr=first->next;
+    while(curr->next)
+    {
+        curr=curr->next;
+        prec=prec->next;
+    }
+    //prec punterà al nuovo ultimo nodo
+    delete last;
+    prec->next=nullptr;
+    last=prec;
+    size-=1;
+}
+
+template<typename T>
+void container<T>::replace_last(int i, const T& m)
+{
+    erase_pos(i);
+    push_back(m);
+}
+
+template<typename T>
+T container<T>::get_T_at_pos(int i) const
+{
+    if(!first->next){
+            if(i==0){
+                return first->info;
+            }
+        }
+        else{
+            nodo* curr=first->next;
+
+            if(i==0){
+                return first->info;
+            }
+
+            for(int x=1; curr->next && x<i; x++){
+                curr=curr->next;
+            }
+
+            if(curr){
+                return curr->info;
+            }
+        }
+        T tmp;
+        return tmp;
+}
+
+template<class T>
+void container<T>::erase()
+{
+    if (first){
+        first->distruggi();
+        first = nullptr;
     }
 }
 
-
-
-template<class T>
-Container<T>::constIteratore::constIteratore(nodo * p) : puntatore(p) {}
-
-template<class T>
-Container<T>::constIteratore::constIteratore() : puntatore(nullptr) {}
-
-template<class T>
-typename Container<T>::constIteratore & Container<T>::constIteratore::operator=(const constIteratore & cit)
+template<typename T>
+int container<T>::get_size() const
 {
-    puntatore=cit.puntatore;
-    return *this;
-}
-
-template<class T>
-typename Container<T>::constIteratore& Container<T>::constIteratore::operator++()
-{
-    if(puntatore) puntatore=puntatore->next;
-    return *this;
-
-}
-template<class T>
-typename Container<T>::constIteratore& Container<T>::constIteratore::operator++(int)
-{
-    Iteratore aux=*this;
-    if(puntatore) puntatore=puntatore->next;
-    return aux;
-
-}
-
-template<class T>
-const T & Container<T>::constIteratore::operator*() const
-{
-    return puntatore->info;
-}
-
-template<class T>
-const T * Container<T>::constIteratore::operator->() const
-{
-    return &(puntatore->info);
-}
-
-template<class T>
-bool Container<T>::constIteratore::operator==(const constIteratore& cit)
-{
-    return puntatore == cit.puntatore;
-}
-
-template<class T>
-bool Container<T>::constIteratore::operator!=(const constIteratore& cit)
-{
-    return puntatore != cit.puntatore;
-}
-
-template<class T>
-Container<T>::Iteratore::Iteratore(nodo * p) : puntatore(p) {}
-
-template<class T>
-Container<T>::Iteratore::Iteratore() : puntatore(nullptr) {}
-
-template<class T>
-typename Container<T>::Iteratore & Container<T>::Iteratore::operator=(const Iteratore & it)
-{
-    puntatore=it.puntatore;
-    return *this;
-}
-
-template<class T>
-typename Container<T>::Iteratore& Container<T>::Iteratore::operator++()
-{
-    if(puntatore) puntatore=puntatore->next;
-    return *this;
-
-}
-template<class T>
-typename Container<T>::Iteratore& Container<T>::Iteratore::operator++(int)
-{
-    Iteratore aux=*this;
-    if(puntatore) puntatore=puntatore->next;
-    return aux;
-
-}
-
-template<class T>
-T & Container<T>::Iteratore::operator*() const
-{
-    return puntatore->info;
-}
-
-template<class T>
-T * Container<T>::Iteratore::operator->() const
-{
-    return &(puntatore->info);
-}
-
-template<class T>
-bool Container<T>::Iteratore::operator==(const Iteratore& it)
-{
-    return puntatore == it.puntatore;
-}
-
-template<class T>
-bool Container<T>::Iteratore::operator!=(const Iteratore& it)
-{
-    return puntatore != it.puntatore;
-}
-
-
-template<class T>
-typename Container<T>::constIteratore Container<T>::inizio() const
-{
-    return constIteratore(primo);
-}
-
-template<class T>
-typename Container<T>::constIteratore Container<T>::fine() const
-{
-    return constIteratore(nullptr);
-}
-
-template<class T>
-typename Container<T>::Iteratore Container<T>::inizio()
-{
-    return Iteratore(primo);
-}
-
-template<class T>
-typename Container<T>::Iteratore Container<T>::fine()
-{
-    return Iteratore(nullptr);
+    return size;
 }
 
 #endif

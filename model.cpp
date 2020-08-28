@@ -1,11 +1,11 @@
 #include "model.h"
-model::model(QString path) : path(path), datiTotali(new Container<deepPointer<nowqt>>()), modificato(false)
+model::model(QString path) : path(path), datiTotali(new container<deepPointer<nowqt>>()), modificato(false)
 {
 }
 
 model::~model()
 {
-    datiTotali->clear();
+    datiTotali->erase();
     delete datiTotali;
 }
 
@@ -14,7 +14,7 @@ model::~model()
 QStringList model::getCampiCliente(const unsigned int indice) const
 {
     QStringList temp;
-    deepPointer<nowqt> clienteTemp = datiTotali->prendiNodoIndice(indice);
+    deepPointer<nowqt> clienteTemp = datiTotali->get_T_at_pos(indice);
     temp.push_back(QString::fromStdString(clienteTemp->getNome()));
     temp.push_back(QString::fromStdString(clienteTemp->getCognome()));
     temp.push_back(QString::fromStdString(clienteTemp->getCodFisc()));
@@ -77,7 +77,7 @@ QStringList model::getCampiCliente(const unsigned int indice) const
 deepPointer<nowqt> model::mostraCliente(const unsigned int i) const
 {
     deepPointer<nowqt> clienteDaVisualizzare;
-    clienteDaVisualizzare = (datiTotali->prendiNodoIndice(i));
+    clienteDaVisualizzare = (datiTotali->get_T_at_pos(i));
     return clienteDaVisualizzare;
 }
 
@@ -90,10 +90,10 @@ QStringList model::getListaClientiT(QMap<unsigned int, unsigned int>& indexMappe
 {
     QStringList ret;
     QString cliente;
-    auto it=datiTotali->inizio();
+    auto it=datiTotali->begin();
     unsigned int count=0;
-    if(!datiTotali->isEmpty()){
-        while(it!=datiTotali->fine()){
+    if(!datiTotali->empty()){
+        while(it!=datiTotali->end()){
             cliente = (QString::fromStdString((*(*it)).getNome() + " " + (*(*it)).getCognome()));
                 indexMapper.insert((uint)ret.count(),count);
 
@@ -140,6 +140,6 @@ void model::aggNelContainer(const QStringList c)
                       c.at(21).toUInt(), c.at(21).toUInt(), c.at(22)=="true" ? true:false);
     }
 
-    datiTotali->aggInOrdine(cliente);
+    datiTotali->push_back(cliente);
     emit clienteAggiunto();
 }
